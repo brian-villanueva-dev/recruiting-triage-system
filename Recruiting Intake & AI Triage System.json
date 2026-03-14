@@ -1,0 +1,471 @@
+{
+  "name": "Recruiting Intake & AI Triage System",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Candidate Intake — Recruiting Triage System",
+        "formDescription": "Submit a new candidate for AI-assisted review and routing",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Candidate Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Position Applied For",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Software Engineer"
+                  },
+                  {
+                    "option": "System Administrator"
+                  },
+                  {
+                    "option": "Project Manager"
+                  },
+                  {
+                    "option": "GIS Analyst"
+                  },
+                  {
+                    "option": "Security Analyst"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Location",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Recruiter Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Resume Summary",
+              "fieldType": "textarea",
+              "placeholder": "Paste a brief summary or key qualifications from the candidate's resume",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "eae4f221-b1ee-4592-b221-db0f4f9db9f8",
+      "name": "On form submission",
+      "webhookId": "YOUR_WEBHOOK_ID"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "ChangeMe"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"claude-haiku-4-5-20251001\",\n  \"max_tokens\": 1024,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"You are a recruiting assistant. A candidate has applied for the position of {{ $('On form submission').item.json['Position Applied For'] }}.\\n\\nResume summary:\\n{{ $('On form submission').item.json['Resume Summary'] }}\\n\\nIn exactly 3 sentences: (1) Summarize their relevant experience for this role. (2) Identify their single strongest qualification. (3) Flag the most important gap or risk. Be direct and specific. Do not use markdown, headers, or formatting. Plain text only.\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "0215f81f-8cd3-47c0-84de-86a887fb2fb1",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Recruiting Triage System",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Candidate Name": "={{ $('On form submission').item.json['Candidate Name'] }}",
+            "Position Applied For": "={{ $('On form submission').item.json['Position Applied For'] }}",
+            "Location": "={{ $('On form submission').item.json['Location'] }}",
+            "Recruiter Name": "={{ $('On form submission').item.json['Recruiter Name'] }}",
+            "Resume Summary": "={{ $('On form submission').item.json['Resume Summary'] }}",
+            "AI Assessment": "={{ $('HTTP Request').item.json.content[0].text }}",
+            "Submission Date": "={{ $now.toISO() }}",
+            "Routing": "={{ $('On form submission').item.json['Position Applied For'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Candidate Name",
+              "displayName": "Candidate Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Position Applied For",
+              "displayName": "Position Applied For",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Recruiter Name",
+              "displayName": "Recruiter Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Resume Summary",
+              "displayName": "Resume Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AI Assessment",
+              "displayName": "AI Assessment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Routing",
+              "displayName": "Routing",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Submission Date",
+              "displayName": "Submission Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        0
+      ],
+      "id": "bfaac9e8-16b4-491e-82ea-0bd8ed02e2f8",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('On form submission').item.json['Position Applied For'] }}",
+                    "rightValue": "Software Engineer",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "e3891a2e-fd51-443c-a34b-47025f382928"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "d6601512-09a6-44c3-9f1f-4cd476b9c7ca",
+                    "leftValue": "={{ $('On form submission').item.json['Position Applied For'] }}",
+                    "rightValue": "Systems Administrator",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "659e3dde-f7f4-4749-ace0-1e14e2db39ca",
+                    "leftValue": "={{ $('On form submission').item.json['Position Applied For'] }}",
+                    "rightValue": "Project Manager",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "745e473b-2c9d-4841-83fa-d0c8cd3a94be",
+                    "leftValue": "={{ $('On form submission').item.json['Position Applied For'] }}",
+                    "rightValue": "GIS Analyst",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "1054903b-8965-40ab-8242-d9941c95cc8e",
+                    "leftValue": "={{ $('On form submission').item.json['Position Applied For'] }}",
+                    "rightValue": "Security Analyst",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        624,
+        0
+      ],
+      "id": "aa6034b3-8be9-46ba-9ab7-dab185ce341f",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "sendTo": "ChangeMe",
+        "subject": "=New Candidate Alert: {{ $('On form submission').item.json['Candidate Name'] }} — {{ $('On form submission').item.json['Position Applied For'] }}",
+        "message": "=<p>A new candidate has been submitted and reviewed.</p>\n\n<p>\n<strong>Candidate:</strong> {{ $('On form submission').item.json['Candidate Name'] }}<br>\n<strong>Position:</strong> {{ $('On form submission').item.json['Position Applied For'] }}<br>\n<strong>Location:</strong> {{ $('On form submission').item.json['Location'] }}<br>\n<strong>Recruiter:</strong> {{ $('On form submission').item.json['Recruiter Name'] }}\n</p>\n\n<p><strong>AI Assessment:</strong><br>\n{{ $('HTTP Request').item.json.content[0].text }}</p>\n\n<p><em>Submitted: {{ $now.toISO() }}</em></p>",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "Recruiting Triage System"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        832,
+        -224
+      ],
+      "id": "2ab18616-a0a2-4593-b5e7-7d8b0ec8705c",
+      "name": "Send a message",
+      "webhookId": "YOUR_WEBHOOK_ID",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "174a444b-8264-4057-88fa-a18f32d21730",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "YOUR_INSTANCE_ID"
+  },
+  "id": "YOUR_WORKFLOW_ID",
+  "tags": []
+}

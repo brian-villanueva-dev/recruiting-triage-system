@@ -1,0 +1,18 @@
+# Environment and secrets
+.env
+*.key
+*.pem
+
+# n8n local data (contains credentials)
+.n8n/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Node
+node_modules/
