@@ -20,7 +20,7 @@
                     "option": "Software Engineer"
                   },
                   {
-                    "option": "System Administrator"
+                    "option": "Systems Administrator"
                   },
                   {
                     "option": "Project Manager"
@@ -72,7 +72,7 @@
           "parameters": [
             {
               "name": "x-api-key",
-              "value": "ChangeMe"
+              "value": "YOUR_ANTHROPIC_API_KEY"
             },
             {
               "name": "anthropic-version",
@@ -355,7 +355,7 @@
     },
     {
       "parameters": {
-        "sendTo": "ChangeMe",
+        "sendTo": "YOUR_EMAIL",
         "subject": "=New Candidate Alert: {{ $('On form submission').item.json['Candidate Name'] }} — {{ $('On form submission').item.json['Position Applied For'] }}",
         "message": "=<p>A new candidate has been submitted and reviewed.</p>\n\n<p>\n<strong>Candidate:</strong> {{ $('On form submission').item.json['Candidate Name'] }}<br>\n<strong>Position:</strong> {{ $('On form submission').item.json['Position Applied For'] }}<br>\n<strong>Location:</strong> {{ $('On form submission').item.json['Location'] }}<br>\n<strong>Recruiter:</strong> {{ $('On form submission').item.json['Recruiter Name'] }}\n</p>\n\n<p><strong>AI Assessment:</strong><br>\n{{ $('HTTP Request').item.json.content[0].text }}</p>\n\n<p><em>Submitted: {{ $now.toISO() }}</em></p>",
         "options": {
@@ -461,7 +461,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "174a444b-8264-4057-88fa-a18f32d21730",
+  "versionId": "YOUR_VERSION_ID",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "YOUR_INSTANCE_ID"
