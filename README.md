@@ -8,12 +8,33 @@ A 70-person federal contract had 15 concurrent job openings and 100+ candidates 
 
 The original fix was a Power Apps/Power Automate system that automated the full lifecycle — intake through EOD security handoff — inside the Microsoft ecosystem. **This project rebuilds the core intake and routing pattern in n8n to prove the design is platform-agnostic, then adds an AI classification layer that didn't exist in the original.**
 
+## Demo
+
+**[Watch the Loom walkthrough →](#)** *(link coming soon)*
+
+## Screenshots
+
+### n8n workflow — 5-node pipeline from intake to notification
+![Workflow canvas](screenshots/workflow-canvas.png)
+
+### Form intake — candidate submission with resume summary
+![Form intake](screenshots/form-intake.png)
+
+### AI assessment — Claude API generates structured candidate evaluation
+![AI assessment output](screenshots/ai-assessment-output.png)
+
+### Google Sheets — candidate record with AI assessment logged automatically
+![Google Sheets log](screenshots/google-sheets-log.png)
+
+### Email notification — technical lead receives candidate summary and AI assessment
+![Email notification](screenshots/email-notification.png)
+
 ## What the System Does
 
-1. **Form Intake** — Captures candidate name, position, location, recruiter, and resume summary via n8n's built-in form trigger  
-2. **AI Assessment** — Calls the Claude API (Haiku) with a structured prompt that returns three sentences: relevant experience summary, strongest qualification, and the most important gap or risk  
-3. **Database Logging** — Writes the full candidate record plus AI assessment to Google Sheets with a timestamp  
-4. **Position Routing** — A Switch node routes candidates to the correct technical lead bucket based on position applied for (5 branches: Software Engineer, Systems Administrator, Project Manager, GIS Analyst, Security Analyst)  
+1. **Form Intake** — Captures candidate name, position, location, recruiter, and resume summary via n8n's built-in form trigger
+2. **AI Assessment** — Calls the Claude API (Haiku) with a structured prompt that returns three sentences: relevant experience summary, strongest qualification, and the most important gap or risk
+3. **Database Logging** — Writes the full candidate record plus AI assessment to Google Sheets with a timestamp
+4. **Position Routing** — A Switch node routes candidates to the correct technical lead bucket based on position applied for (5 branches: Software Engineer, Systems Administrator, Project Manager, GIS Analyst, Security Analyst)
 5. **Automated Notification** — Sends a Gmail alert to the assigned technical lead with the candidate summary and AI assessment
 
 ## Architecture
@@ -37,15 +58,6 @@ Switch Node (Route by Position)
       └── Security Analyst ───┘
 ```
 
-## Demo Walkthrough
-
-**[Watch the Loom walkthrough →](YOUR_LOOM_URL)**
-
-A 5–7 minute video covering:
-- The manual recruiting process this system replaced and why it broke at scale
-- A node-by-node walkthrough of the workflow with design decisions explained
-- A live test submission showing the full chain fire in real time — form → AI assessment → Google Sheets log → routing → email notification
-
 ## Stack
 
 | Component | Tool | Purpose |
@@ -60,9 +72,9 @@ A 5–7 minute video covering:
 
 ### Prerequisites
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop) installed and running  
-- [Anthropic API key](https://console.anthropic.com) with credits loaded  
-- Google account with Sheets and Gmail access  
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) installed and running
+- [Anthropic API key](https://console.anthropic.com) with credits loaded
+- Google account with Sheets and Gmail access
 
 ### 1. Start n8n
 
@@ -74,16 +86,16 @@ Open `http://localhost:5678` in your browser.
 
 ### 2. Import the Workflow
 
-1. In n8n, click **Import from file** in the workflow menu  
-2. Select `workflow/recruiting-triage-system.json` from this repo  
+1. In n8n, click **Import from file** in the workflow menu
+2. Select `workflow/recruiting-triage-system.json` from this repo
 3. The full workflow will load onto the canvas
 
 ### 3. Configure Credentials
 
 You'll need to set up three credentials inside n8n:
 
-- **Anthropic API Key** — Paste into the `x-api-key` header on the HTTP Request node  
-- **Google Sheets** — OAuth2 connection (n8n will walk you through the consent flow)  
+- **Anthropic API Key** — Paste into the `x-api-key` header on the HTTP Request node
+- **Google Sheets** — OAuth2 connection (n8n will walk you through the consent flow)
 - **Gmail** — OAuth2 connection (same Google account)
 
 Copy `.env.example` to `.env` for reference. API keys go directly into n8n's credential manager — not into environment variables.
@@ -98,23 +110,12 @@ Create a spreadsheet named **Recruiting Triage System** with these column header
 
 ### 5. Publish and Test
 
-1. Click **Publish** in n8n to activate the workflow  
-2. Copy the **Production URL** from the Form Trigger node  
+1. Click **Publish** in n8n to activate the workflow
+2. Copy the **Production URL** from the Form Trigger node
 3. Open the URL, submit a test candidate, and verify:
-   - AI assessment generates in the workflow output  
-   - Row appears in Google Sheets  
+   - AI assessment generates in the workflow output
+   - Row appears in Google Sheets
    - Email notification arrives in your inbox
-
-## Exporting Your Workflow
-
-To export the n8n workflow JSON for this repo:
-
-1. Open the workflow in n8n  
-2. Click the **three-dot menu** (⋯) at the top right  
-3. Select **Download**  
-4. Save the `.json` file to `workflow/recruiting-triage-system.json` in this repo
-
-> **Important:** Before committing, open the JSON file and search for any API keys, email addresses, or OAuth tokens. Remove them. The workflow will prompt for credentials on import — that's the expected behavior.
 
 ## Design Decisions
 
@@ -130,6 +131,8 @@ To export the n8n workflow JSON for this repo:
 
 This project is one component of a broader recruiting and onboarding automation system. The full production version — built in Power Apps and Power Automate — processed 150+ candidates across 15 concurrent positions on a live federal contract. See the [Recruiting Automation Case Study](docs/case-study-recruiting-automation.md) for the complete breakdown.
 
-## Author
+## Built by
 
-Brian Villanueva — [LinkedIn](https://linkedin.com/in/brianvillanueva)
+**Brian Villanueva** — Business Systems Architect | Workflow Automation | AI-Enabled Process Design
+
+[LinkedIn](https://linkedin.com/in/brianvillanueva) · bav401@gmail.com
